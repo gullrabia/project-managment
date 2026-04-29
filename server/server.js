@@ -7,17 +7,14 @@ import { inngest, functions } from './Inngest/index.js';
 
 const app = express();
 
-// Middlewares
 app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
-// Test route
 app.get('/', (req, res) => {
   res.send('Server is live');
 });
 
-// Inngest route
 app.use('/api/inngest', serve({ client: inngest, functions }));
 
 const PORT = process.env.PORT || 5000;

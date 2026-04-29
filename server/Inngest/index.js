@@ -1,14 +1,14 @@
 import { Inngest } from "inngest";
 import prisma from "../configs/prisma.js";
 
-// Create Inngest client
+// Inngest client
 export const inngest = new Inngest({ id: "create-organization" });
 
-//  FIXED FUNCTION
+/* ---------------- CREATE USER ---------------- */
 const syncUserCreation = inngest.createFunction(
   {
-    id: "sync-user-from-clerk",
-    triggers: [{ event: "clerk/user.created" }], 
+    id: "clerk-user-created", //  UNIQUE
+    triggers: [{ event: "clerk/user.created" }],
   },
   async ({ event }) => {
     try {
@@ -23,21 +23,19 @@ const syncUserCreation = inngest.createFunction(
         },
       });
 
-      console.log(" User synced to DB");
+      console.log(" User created in DB");
     } catch (error) {
-      console.error(" Error syncing user:", error);
-      throw error; // important for Inngest retries
+      console.error(" Create error:", error);
+      throw error;
     }
   }
 );
 
-//Inngest Function to delete user from database
-
-
+/* ---------------- DELETE USER ---------------- */
 const syncUserDeletion = inngest.createFunction(
   {
-    id: "sync-user-from-clerk",
-    triggers: [{ event: "clerk/user.deleted" }], 
+    id: "clerk-user-deleted", //  UNIQUE
+    triggers: [{ event: "clerk/user.deleted" }],
   },
   async ({ event }) => {
     try {
@@ -45,48 +43,50 @@ const syncUserDeletion = inngest.createFunction(
 
       await prisma.user.delete({
         where: {
-          id: data,id,
-
-        }
+          id: data.id, //  FIXED TYPO
+        },
       });
 
-      console.log(" Deleted User synced to DB");
+      console.log(" User deleted from DB");
     } catch (error) {
-      console.error(" Error syncing user:", error);
-      throw error; // important for Inngest retries
+      console.error(" Delete error:", error);
+      throw error;
     }
   }
 );
 
+/* ---------------- UPDATE USER ---------------- */
 const syncUserUpdation = inngest.createFunction(
   {
-    id: "sync-user-from-clerk",
-    triggers: [{ event: "clerk/user.updated" }], 
+    id: "clerk-user-updated", //  UNIQUE
+    triggers: [{ event: "clerk/user.updated" }],
   },
   async ({ event }) => {
     try {
       const { data } = event;
 
       await prisma.user.update({
-
-         where: {
-          id: data.id
-         },
+        where: {
+          id: data.id,
+        },
         data: {
-        
           email: data?.email_addresses?.[0]?.email_address || "",
           name: `${data?.first_name || ""} ${data?.last_name || ""}`.trim(),
           image: data?.image_url || "",
         },
       });
 
-      console.log("Update User synced to DB");
+      console.log(" User updated in DB");
     } catch (error) {
-      console.error(" Error syncing user:", error);
-      throw error; // important for Inngest retries
+      console.error(" Update error:", error);
+      throw error;
     }
   }
 );
 
-// Export functions
-export const functions = [syncUserCreation, syncUserDeletion, syncUserUpdation];
+/* ---------------- EXPORT ---------------- */
+export const functions = [
+  syncUserCreation,
+  syncUserDeletion,
+  syncUserUpdation,
+];
