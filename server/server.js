@@ -1,25 +1,22 @@
-import express from "express";
-import "dotenv/config";
-import cors from "cors";
-import { clerkMiddleware } from "@clerk/express";
+import express from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import { clerkMiddleware } from '@clerk/express';
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js";
 
 const app = express();
-
 app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
-// ✅ FIXED ROOT ROUTE
+// ✅ Fixed: correct order (req, res) and removed double braces
 app.get("/", (req, res) => {
-  res.status(200).send("Server is live 🚀");
+    res.send("server is live");
 });
 
-// ✅ INNGEST ROUTE
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-// ❌ REMOVE app.listen()
+const PORT = process.env.PORT || 3000;
 
-// ✅ EXPORT FOR VERCEL
-export default app;
+app.listen(PORT, () => console.log(`server running on port: ${PORT}`));
