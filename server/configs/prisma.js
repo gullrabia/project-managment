@@ -1,6 +1,6 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client"; 
+import { PrismaNeon } from "@prisma/adapter-neon";
 
 const adapter = new PrismaNeon({
   connectionString: process.env.DATABASE_URL,
@@ -8,4 +8,4 @@ const adapter = new PrismaNeon({
 
 const prisma = new PrismaClient({ adapter });
 
-export default prisma;
+export default prisma; 
