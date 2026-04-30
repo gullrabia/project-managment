@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "scripts": {
     "postinstall": "prisma generate",
     "start": "node server.js",
