@@ -12,13 +12,13 @@ app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
-// Routes
+// Test route
 app.get("/", (req, res) => {
-  res.send("server is live");
+  res.status(200).send("Server is live");
 });
 
 // Inngest route
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-
+// IMPORTANT for Vercel
 export default app;
